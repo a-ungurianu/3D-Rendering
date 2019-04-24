@@ -1,6 +1,7 @@
 package cs4102.faces.data;
 
 import cs4102.faces.Utils;
+import org.la4j.Matrix;
 import org.la4j.Vector;
 
 import java.awt.Color;
@@ -13,7 +14,7 @@ public class Triangle {
     private final Vertex v2;
     private final Vertex v3;
 
-    Triangle(Vertex v1, Vertex v2, Vertex v3) {
+    public Triangle(Vertex v1, Vertex v2, Vertex v3) {
 
         this.v1 = v1;
         this.v2 = v2;
@@ -41,6 +42,13 @@ public class Triangle {
 
         return norm.divide(norm.norm());
 
+    }
 
+    public Triangle applyTransformation(Matrix transform) {
+        return new Triangle(
+                v1.applyTransformation(transform),
+                v2.applyTransformation(transform),
+                v3.applyTransformation(transform)
+        );
     }
 }

@@ -4,12 +4,10 @@ import java.util.List;
 
 public class Model {
 
-    private final int index;
     Mesh mesh;
     List<Vertex> vertices;
 
-    public Model(int index, Mesh mesh, List<Vertex> vertices) {
-        this.index = index;
+    public Model(Mesh mesh, List<Vertex> vertices) {
         this.mesh = mesh;
         this.vertices = vertices;
     }

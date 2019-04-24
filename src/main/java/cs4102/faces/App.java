@@ -3,13 +3,11 @@
  */
 package cs4102.faces;
 
-import cs4102.faces.data.Model;
 import cs4102.faces.data.FaceRepository;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Paths;
 
 public class App {
@@ -23,7 +21,7 @@ public class App {
         JFrame frame = new JFrame("Testing");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        Canvas canvas = new Canvas(repository.getFace(1).getTriangles());
+        Canvas canvas = new Canvas(repository.getFace(1));
         frame.add(canvas);
         frame.pack();
         frame.setLocationRelativeTo(null);

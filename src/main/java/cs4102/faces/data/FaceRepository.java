@@ -53,7 +53,7 @@ public class FaceRepository {
 
         List<Vertex> averageVertices = verticesFromMatrices(averagePositions, averageTextures);
 
-        faces.add(new Model(0, mesh, averageVertices));
+        faces.add(new Model(mesh, averageVertices));
 
         for (int i = 1; i <= noFaces; i++) {
             Path positionFile = dataPath.resolve(String.format(POSITION_FORMAT, i));
@@ -67,7 +67,7 @@ public class FaceRepository {
 
             List<Vertex> vertices = verticesFromMatrices(positions, textures);
 
-            faces.add(new Model(i, mesh, vertices));
+            faces.add(new Model(mesh, vertices));
         }
     }
 
@@ -90,4 +90,7 @@ public class FaceRepository {
         return vertices;
     }
 
+    public int faceCount() {
+        return faces.size();
+    }
 }
