@@ -2,6 +2,7 @@ package cs4102.faces;
 
 import cs4102.faces.data.Model;
 import cs4102.faces.data.Triangle;
+import jdk.nashorn.internal.ir.ForNode;
 import org.la4j.Matrix;
 import org.la4j.Vector;
 import org.la4j.matrix.dense.Basic2DMatrix;
@@ -22,17 +23,23 @@ public class Renderer {
 
     private final Vector light = new BasicVector(new double[]{0,0,1});
 
+    private Matrix projectionMatrix = Basic2DMatrix.from2DArray(new double[][] {
+            new double[]{1,0,0,0},
+            new double[]{0,1,0,0},
+            new double[]{0,0,1/10f,0},
+            new double[]{0,0,0,1}
+    });
+
     private Matrix transformMatrix = Matrix.identity(4);
 
     private Stack<Matrix> matrixStack = new Stack<>();
 
-    Renderer(Graphics g) {
+    Renderer(Graphics2D g) {
         this.g = g;
-        scale(Vector.fromArray(new double[]{1,-1}));
     }
 
     public void applyTransform(Matrix transform) {
-        transformMatrix = transform.multiply(transformMatrix);
+        transformMatrix = transformMatrix.multiply(transform);
     }
 
     private double getOrDefault(Vector v, int idx, double defaultValue) {
@@ -50,12 +57,7 @@ public class Renderer {
     }
 
     public void scale(Vector scale) {
-        applyTransform(Basic2DMatrix.from2DArray(new double[][]{
-                new double[]{getOrDefault(scale, 0, 1),0,0,0},
-                new double[]{0,getOrDefault(scale, 1, 1),0,0},
-                new double[]{0,0,getOrDefault(scale, 2, 1),0},
-                new double[]{0,0,0,1}
-        }));
+       scale(getOrDefault(scale,0,1), getOrDefault(scale,1,1), getOrDefault(scale,2,1));
     }
 
     public void drawModel(Model model) {
@@ -69,7 +71,7 @@ public class Renderer {
 
         sortedTriangles.sort(triangleComparator);
 
-        Vector lightNorm = light.multiply(1);
+        Vector lightNorm = light.multiply(-1);
         for (Triangle triangle : sortedTriangles) {
 
             Vector norm = triangle.getNormal();
@@ -79,11 +81,11 @@ public class Renderer {
     }
 
     private void drawPolygonOnScreen(Color color, List<Vector> shape){
-        int[] xs = shape.stream().mapToInt(v -> (int)v.get(0)).toArray();
-        int[] ys = shape.stream().mapToInt(v -> (int)v.get(1)).toArray();
+        List<Vector> projectedShape = shape.stream().map(v -> Utils.transform(projectionMatrix, v)
+        ).collect(Collectors.toList());
 
-        System.out.println(Arrays.toString(xs));
-        System.out.println(Arrays.toString(ys));
+        int[] xs = projectedShape.stream().mapToInt(v -> (int)v.get(0)).toArray();
+        int[] ys = projectedShape.stream().mapToInt(v -> (int)v.get(1)).toArray();
 
         g.setColor(color);
         g.fillPolygon(xs, ys, 3);
@@ -99,6 +101,10 @@ public class Renderer {
 
     public void popMatrix() {
         transformMatrix = matrixStack.pop();
+    }
+
+    public Vector toScreen(Vector v) {
+        return Utils.transform(projectionMatrix, Utils.transform(transformMatrix, v));
     }
 
     public void rotateZ(double angleInDegrees) {
@@ -136,5 +142,29 @@ public class Renderer {
 
     public void fillPolygon(Color color, List<Vector> shape) {
         drawPolygonOnScreen(color,shape.stream().map(this::transformVector).collect(Collectors.toList()));
+    }
+
+    public void translate(double x, double y) {
+        translate(BasicVector.fromArray(new double[]{x, y}));
+    }
+
+    public void scale(double x, double y) {
+        scale(x,y,1);
+    }
+
+    public void scale(double x, double y, double z) {
+        applyTransform(Basic2DMatrix.from2DArray(new double[][]{
+                new double[]{x,0,0,0},
+                new double[]{0,y,0,0},
+                new double[]{0,0,z,0},
+                new double[]{0,0,0,1}
+        }));
+    }
+
+    public void drawText(Color color, Vector p, String text) {
+        Vector screenCoords = toScreen(p);
+        g.setFont(new Font("sans-serif", Font.BOLD, 20));
+        g.setColor(color);
+        g.drawString(text, (int) screenCoords.get(0), (int) screenCoords.get(1));
     }
 }

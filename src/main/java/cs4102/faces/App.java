@@ -14,14 +14,14 @@ public class App {
 
     public static void main(String[] args) throws IOException {
 
-        int noFaces = 10;
+        int noFaces = 100;
 
         FaceRepository repository = new FaceRepository(Paths.get("data/"), noFaces);
 
         JFrame frame = new JFrame("Testing");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
-        Canvas canvas = new Canvas(repository.getFace(1));
+        Canvas canvas = new Canvas(repository);
         frame.add(canvas);
         frame.pack();
         frame.setLocationRelativeTo(null);

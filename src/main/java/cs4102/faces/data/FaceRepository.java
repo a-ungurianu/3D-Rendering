@@ -19,6 +19,7 @@ public class FaceRepository {
 
     private final static String TEXTURE_FORMAT = "tx_%03d.csv";
     private final static String TEXTURE_WEIGHTS = "tx_ev.csv";
+    private final Mesh mesh;
 
     private List<Model> faces = new ArrayList<>();
 
@@ -49,7 +50,7 @@ public class FaceRepository {
                 Integer.parseInt(vals[1]),
                 Integer.parseInt(vals[2])}).collect(Collectors.toList());
 
-        Mesh mesh = new Mesh(triangles);
+        this.mesh = new Mesh(triangles);
 
         List<Vertex> averageVertices = verticesFromMatrices(averagePositions, averageTextures);
 
@@ -57,7 +58,7 @@ public class FaceRepository {
 
         for (int i = 1; i <= noFaces; i++) {
             Path positionFile = dataPath.resolve(String.format(POSITION_FORMAT, i));
-            Matrix positionOffsets = matrixFromCSVFile(positionFile).multiply(positionWeights.get(i-1));
+            Matrix positionOffsets = matrixFromCSVFile(positionFile).multiply(positionWeights.get(i-1)*5);
             Matrix positions = averagePositions.add(positionOffsets);
 
             Path textureFile = dataPath.resolve(String.format(TEXTURE_FORMAT, i));
@@ -80,7 +81,7 @@ public class FaceRepository {
         return Basic2DMatrix.fromCSV(String.join("\n", Files.readAllLines(file)));
     }
 
-    private List<Vertex> verticesFromMatrices(Matrix positions, Matrix textures) {
+    public static  List<Vertex> verticesFromMatrices(Matrix positions, Matrix textures) {
         List<Vertex> vertices = new ArrayList<>();
 
         for(int j = 0; j < positions.rows(); ++j) {
@@ -92,5 +93,9 @@ public class FaceRepository {
 
     public int faceCount() {
         return faces.size();
+    }
+
+    public Mesh getMesh() {
+        return mesh;
     }
 }
