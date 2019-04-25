@@ -9,6 +9,7 @@ import javax.jws.WebParam;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +31,8 @@ public class Canvas extends JPanel implements MouseWheelListener {
 
     Canvas(FaceRepository repository) {
         this.setFocusable(true);
+        this.setDoubleBuffered(true);
+        this.setOpaque(true);
         this.requestFocus();
         this.repository = repository;
         this.composer = new FaceCompositor(repository);
@@ -129,9 +132,9 @@ public class Canvas extends JPanel implements MouseWheelListener {
 
         float triangleSize = 200;
 
-        List<Vector> triangle = Arrays.asList(new BasicVector(new double[]{0, sqrt(3) * triangleSize / 4}),
-                new BasicVector(new double[]{-triangleSize / 2, -sqrt(3) * triangleSize / 4}),
-                new BasicVector(new double[]{triangleSize / 2, -sqrt(3) * triangleSize / 4}));
+        List<Vector> triangle = Arrays.asList(new Vector4(0, sqrt(3) * triangleSize / 4),
+                new Vector4(-triangleSize / 2, -sqrt(3) * triangleSize / 4),
+                new Vector4(triangleSize / 2, -sqrt(3) * triangleSize / 4));
 
         this.compositionTriangle = triangle.stream().map(renderer::toScreen).collect(Collectors.toList());
 
@@ -160,6 +163,7 @@ public class Canvas extends JPanel implements MouseWheelListener {
         }
 
         renderer.popMatrix();
+
     }
 
     @Override

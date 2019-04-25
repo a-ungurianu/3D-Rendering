@@ -9,6 +9,7 @@ import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.dense.BasicVector;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +20,7 @@ import static java.lang.Math.*;
 
 public class Renderer {
 
-    private final Graphics g;
+    private final Graphics2D g;
 
     private final Vector light = new BasicVector(new double[]{0,0,1});
 
@@ -81,14 +82,15 @@ public class Renderer {
     }
 
     private void drawPolygonOnScreen(Color color, List<Vector> shape){
-        List<Vector> projectedShape = shape.stream().map(v -> Utils.transform(projectionMatrix, v)
-        ).collect(Collectors.toList());
+        Polygon polygon = new Polygon();
+        for(Vector v:shape) {
+            Vector screenV = Utils.transform(projectionMatrix, v);
+            polygon.addPoint((int)screenV.get(0), (int)screenV.get(1));
+        }
 
-        int[] xs = projectedShape.stream().mapToInt(v -> (int)v.get(0)).toArray();
-        int[] ys = projectedShape.stream().mapToInt(v -> (int)v.get(1)).toArray();
 
         g.setColor(color);
-        g.fillPolygon(xs, ys, 3);
+        g.fillPolygon(polygon);
     }
 
     private Vector transformVector(Vector v) {

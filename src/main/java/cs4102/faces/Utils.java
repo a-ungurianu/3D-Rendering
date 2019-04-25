@@ -33,4 +33,12 @@ public final class Utils {
     public static Vector transform(Matrix transformation, Vector v) {
         return transformation.multiply(homogenize(v).toColumnMatrix()).toColumnVector();
     }
+
+
+    public static double magnitude3D(Vector v) {
+        double x = v.get(0);
+        double y = v.get(1);
+        double z = v.get(2);
+        return Math.sqrt(x*x + y*y + z*z);
+    }
 }

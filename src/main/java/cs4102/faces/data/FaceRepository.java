@@ -1,5 +1,6 @@
 package cs4102.faces.data;
 
+import cs4102.faces.Vector4;
 import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic2DMatrix;
 
@@ -85,7 +86,7 @@ public class FaceRepository {
         List<Vertex> vertices = new ArrayList<>();
 
         for(int j = 0; j < positions.rows(); ++j) {
-            vertices.add(new Vertex(positions.getRow(j),textures.getRow(j)));
+            vertices.add(new Vertex(new Vector4(positions.getRow(j)),new Vector4(textures.getRow(j))));
         }
 
         return vertices;

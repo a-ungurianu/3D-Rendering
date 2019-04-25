@@ -22,6 +22,7 @@ public class Triangle {
     }
 
 
+
     public Color getAverageColour() {
         int r = (int) ((v1.getColour().get(0) + v2.getColour().get(0) + v3.getColour().get(0)) / 3);
         int g = (int)((v1.getColour().get(1) + v2.getColour().get(1) + v3.getColour().get(1)) /3);
@@ -40,7 +41,7 @@ public class Triangle {
 
         Vector norm = Utils.crossProduct(a,b);
 
-        return norm.divide(norm.norm());
+        return norm.divide(Utils.magnitude3D(norm));
 
     }
 
