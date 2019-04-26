@@ -104,10 +104,12 @@ public class Canvas extends JPanel implements MouseWheelListener {
 
 
 
-    private float rotation = 0;
+    private float translate = 0;
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+
+        long start = System.nanoTime();
 
         Graphics2D g2d = (Graphics2D) graphics;
 
@@ -119,8 +121,9 @@ public class Canvas extends JPanel implements MouseWheelListener {
         renderer.pushMatrix();
         renderer.translate(250, 0);
 
-        renderer.rotateY(rotation);
         renderer.scale(BasicVector.fromArray(new double[]{scale, scale, scale}));
+
+        renderer.translate(0,0, translate / scale);
 
         renderer.drawModel(composer.generateFace());
 
@@ -163,6 +166,8 @@ public class Canvas extends JPanel implements MouseWheelListener {
         }
 
         renderer.popMatrix();
+
+        System.out.printf("Time to render: %f ms\n", (System.nanoTime() - start) / 1000000f);
 
     }
 

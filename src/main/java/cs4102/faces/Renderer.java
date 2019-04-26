@@ -7,6 +7,7 @@ import org.la4j.Matrix;
 import org.la4j.Vector;
 import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.dense.BasicVector;
+import sun.java2d.SunGraphics2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -24,14 +25,21 @@ public class Renderer {
 
     private final Vector light = new BasicVector(new double[]{0,0,1});
 
-    private Matrix projectionMatrix = Basic2DMatrix.from2DArray(new double[][] {
+    final float f = 5;
+
+    private Matrix projectionMatrix = new Matrix44(new double[][] {
             new double[]{1,0,0,0},
             new double[]{0,1,0,0},
-            new double[]{0,0,1/10f,0},
+            new double[]{0,0,0,0},
             new double[]{0,0,0,1}
     });
 
-    private Matrix transformMatrix = Matrix.identity(4);
+    private Matrix transformMatrix = new Matrix44(new double[][] {
+            new double[]{1,0,0,0},
+            new double[]{0,1,0,0},
+            new double[]{0,0,1,0},
+            new double[]{0,0,0,1}
+    });
 
     private Stack<Matrix> matrixStack = new Stack<>();
 
@@ -49,7 +57,7 @@ public class Renderer {
 
     public void translate(Vector t) {
 
-        applyTransform(Basic2DMatrix.from2DArray( new double[][]{
+        applyTransform(new Matrix44( new double[][]{
                 new double[]{1, 0, 0, getOrDefault(t, 0,0)},
                 new double[]{0, 1, 0, getOrDefault(t, 1,0)},
                 new double[]{0, 0, 1, getOrDefault(t, 2,0)},
@@ -112,7 +120,7 @@ public class Renderer {
     public void rotateZ(double angleInDegrees) {
         double theta = toRadians(angleInDegrees);
 
-        applyTransform(Basic2DMatrix.from2DArray(new double[][]{
+        applyTransform(new Matrix44(new double[][]{
                 new double[]{cos(theta), -sin(theta), 0, 0},
                 new double[]{sin(theta), cos(theta), 0, 0},
                 new double[]{0,0,1,0},
@@ -123,7 +131,7 @@ public class Renderer {
     public void rotateY(double angleInDegrees) {
         double theta = toRadians(angleInDegrees);
 
-        applyTransform(Basic2DMatrix.from2DArray(new double[][] {
+        applyTransform(new Matrix44(new double[][] {
                 new double[]{cos(theta), 0, sin(theta), 0},
                 new double[]{0, 1, 0, 0},
                 new double[]{-sin(theta), 0, cos(theta), 0},
@@ -134,7 +142,7 @@ public class Renderer {
     public void rotateX(double angleInDegrees) {
         double theta = toRadians(angleInDegrees);
 
-        applyTransform(Basic2DMatrix.from2DArray(new double[][]{
+        applyTransform(new Matrix44(new double[][]{
                 new double[]{1,0,0,0},
                 new double[]{0,cos(theta), -sin(theta), 0},
                 new double[]{0,sin(theta), cos(theta), 0},
@@ -155,7 +163,7 @@ public class Renderer {
     }
 
     public void scale(double x, double y, double z) {
-        applyTransform(Basic2DMatrix.from2DArray(new double[][]{
+        applyTransform(new Matrix44(new double[][]{
                 new double[]{x,0,0,0},
                 new double[]{0,y,0,0},
                 new double[]{0,0,z,0},
@@ -168,5 +176,9 @@ public class Renderer {
         g.setFont(new Font("sans-serif", Font.BOLD, 20));
         g.setColor(color);
         g.drawString(text, (int) screenCoords.get(0), (int) screenCoords.get(1));
+    }
+
+    public void translate(double x, double y, double z) {
+        translate(new Vector4(x,y,z));
     }
 }

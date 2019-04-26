@@ -1,7 +1,12 @@
 package cs4102.faces;
 
+import com.sun.xml.internal.ws.addressing.model.InvalidAddressingHeaderException;
+import org.la4j.Matrix;
 import org.la4j.Vector;
+import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.DenseVector;
+
+import java.awt.dnd.InvalidDnDOperationException;
 
 public class Vector4 extends DenseVector {
     public double x,y,z,w;
@@ -35,6 +40,14 @@ public class Vector4 extends DenseVector {
         this.y = length > 1 ? row.get(1) : 0;
         this.z = length > 2 ? row.get(2) : 0;
         this.w = length > 3 ? row.get(3) : 0;
+    }
+
+    public static Vector4 fromColumnMatrix(Matrix columnMatrix) {
+        return new Vector4(columnMatrix.get(0,0),
+                           columnMatrix.get(1,0),
+                           columnMatrix.get(2,0),
+                           columnMatrix.get(3,0)
+                );
     }
 
 
@@ -89,16 +102,80 @@ public class Vector4 extends DenseVector {
 
     @Override
     public Vector subtract(Vector that) {
-        return new Vector4(x - that.get(0), y - that.get(1), z - that.get(2), w - that.get(3));
+        if(that.length() != this.length()) throw new IllegalArgumentException();
+
+        Vector4 s = new Vector4(x - that.get(0), y - that.get(1), z - that.get(2), w - that.get(3));
+        s.length = that.length();
+        return s;
     }
 
     @Override
     public Vector multiply(double value) {
-        return new Vector4(x * value, y* value, z* value, w * value);
+        Vector4 m = new Vector4(x * value, y* value, z* value, w * value);
+        m.length = this.length;
+        return m;
+    }
+
+    @Override
+
+    public double innerProduct(Vector that) {
+        double res = 0;
+
+        switch(that.length()) {
+            case 4:
+                res += w * that.get(3);
+            case 3:
+                res += z * that.get(2);
+            case 2:
+                res += y * that.get(1);
+            case 1:
+                res += x * that.get(0);
+        }
+
+        return res;
     }
 
     @Override
     public double[] toArray() {
         return new double[0];
+    }
+
+
+    @Override
+    public Matrix toColumnMatrix() {
+
+        double result[][];
+
+        switch(length) {
+            case 1:{
+                result = new double[][] {
+                        new double[]{x}
+                };
+            }break;
+            case 2:{
+                result = new double[][] {
+                        new double[]{x},
+                        new double[]{y}
+                };
+            }break;
+            case 3:{
+                result = new double[][] {
+                        new double[]{x},
+                        new double[]{y},
+                        new double[]{z}
+                };
+            }break;
+            default:{
+                result = new double[][] {
+                        new double[]{x},
+                        new double[]{y},
+                        new double[]{z},
+                        new double[]{w}
+                };
+            }break;
+        }
+
+
+        return Basic2DMatrix.from2DArray(result);
     }
 }

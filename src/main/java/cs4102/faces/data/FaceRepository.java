@@ -27,6 +27,8 @@ public class FaceRepository {
 
     public FaceRepository(Path dataPath, int noFaces) throws IOException {
 
+        long start = System.nanoTime();
+
         Path averagePositionsFile = dataPath.resolve(String.format(POSITION_FORMAT, 0));
 
         Matrix averagePositions = matrixFromCSVFile(averagePositionsFile);
@@ -71,6 +73,8 @@ public class FaceRepository {
 
             faces.add(new Model(mesh, vertices));
         }
+
+        System.out.printf("Time to load models: %.2f ms",(System.nanoTime() - start)/1e6f);
     }
 
 
