@@ -77,7 +77,7 @@ public class FaceRepository {
             faces.add(new Model(mesh, vertices));
         }
 
-        System.out.printf("Time to load models: %.2f ms",(System.nanoTime() - start)/1e6f);
+        System.out.printf("Time to load models: %.2f ms\n",(System.nanoTime() - start)/1e6f);
     }
 
 

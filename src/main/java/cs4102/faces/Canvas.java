@@ -172,7 +172,7 @@ public class Canvas extends JPanel {
 
         renderer.popMatrix();
 
-        System.out.printf("Time to render: %f ms\n", (System.nanoTime() - start) / 1000000f);
+        System.out.printf("Time to render: %.2f ms\n", (System.nanoTime() - start) / 1000000f);
 
 
     }
