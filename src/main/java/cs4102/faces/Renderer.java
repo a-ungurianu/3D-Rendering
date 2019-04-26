@@ -2,16 +2,11 @@ package cs4102.faces;
 
 import cs4102.faces.data.Model;
 import cs4102.faces.data.Triangle;
-import jdk.nashorn.internal.ir.ForNode;
 import org.la4j.Matrix;
 import org.la4j.Vector;
-import org.la4j.matrix.dense.Basic2DMatrix;
 import org.la4j.vector.dense.BasicVector;
-import sun.java2d.SunGraphics2D;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
@@ -23,9 +18,9 @@ public class Renderer {
 
     private final Graphics2D g;
 
-    private final Vector light = new BasicVector(new double[]{0,0,1});
-
-    final float f = 5;
+    private final Vector ambient = new Vector4(BasicVector.fromCSV(App.config.getProperty("ambientColor", "0.2, 0.2, 0.2")));
+    private final Vector directLight = new Vector4(BasicVector.fromCSV(App.config.getProperty("directLightDirection","0,0,1")));
+    private final Vector lightColour =new Vector4(BasicVector.fromCSV(App.config.getProperty("directLightColor","1,1,1")));
 
     private Matrix projectionMatrix = new Matrix44(new double[][] {
             new double[]{1,0,0,0},
@@ -80,12 +75,23 @@ public class Renderer {
 
         sortedTriangles.sort(triangleComparator);
 
-        Vector lightNorm = light.multiply(-1);
+        Vector lightNorm = directLight.divide(directLight.norm()).multiply(-1);
         for (Triangle triangle : sortedTriangles) {
 
             Vector norm = triangle.getNormal();
-            float brightness = (float) Double.max(lightNorm.innerProduct(norm), lightNorm.innerProduct(norm.multiply(-1)));
-            drawPolygonOnScreen(Utils.darker(triangle.getAverageColour(), brightness), triangle.getShape());
+            Color c = triangle.getAverageColour();
+
+
+            Vector light = ambient.add(lightColour.multiply(lightNorm.innerProduct(norm)));
+
+            Color finalColor = new Color(
+                    Math.max(0, Math.min(255,(int)(c.getRed() * light.get(0)))),
+                    Math.max(0, Math.min(255,(int)(c.getGreen() * light.get(1)))),
+                    Math.max(0, Math.min(255,(int)(c.getBlue() * light.get(2))))
+            );
+
+
+            drawPolygonOnScreen(finalColor, triangle.getShape());
         }
     }
 

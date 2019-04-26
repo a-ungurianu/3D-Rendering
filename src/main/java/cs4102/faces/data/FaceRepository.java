@@ -1,5 +1,6 @@
 package cs4102.faces.data;
 
+import cs4102.faces.App;
 import cs4102.faces.Vector4;
 import org.la4j.Matrix;
 import org.la4j.matrix.dense.Basic2DMatrix;
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class FaceRepository {
+
+    private float offsetAmplificationFactor = Float.parseFloat(App.config.getProperty("offsetAmplificationFactor", "1"));
 
     private final static String MESH_FILENAME = "mesh.csv";
 
@@ -61,7 +64,7 @@ public class FaceRepository {
 
         for (int i = 1; i <= noFaces; i++) {
             Path positionFile = dataPath.resolve(String.format(POSITION_FORMAT, i));
-            Matrix positionOffsets = matrixFromCSVFile(positionFile).multiply(positionWeights.get(i-1)*5);
+            Matrix positionOffsets = matrixFromCSVFile(positionFile).multiply(positionWeights.get(i-1)*offsetAmplificationFactor);
             Matrix positions = averagePositions.add(positionOffsets);
 
             Path textureFile = dataPath.resolve(String.format(TEXTURE_FORMAT, i));

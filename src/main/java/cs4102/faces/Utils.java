@@ -28,6 +28,10 @@ public final class Utils {
         return Vector4.fromColumnMatrix(transformation.multiply(homogenize(v).toColumnMatrix()));
     }
 
+    public static Vector colorTo1Vector(Color c) {
+        return new Vector4(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f);
+    }
+
 
     public static double magnitude3D(Vector v) {
         double x = v.get(0);

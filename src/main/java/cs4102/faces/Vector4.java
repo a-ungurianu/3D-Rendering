@@ -33,7 +33,7 @@ public class Vector4 extends DenseVector {
     }
 
     public Vector4(Vector row) {
-        super(Math.max(row.length(), 4));
+        super(Math.min(row.length(), 4));
 
         int length = row.length();
         this.x = length > 0 ?row.get(0) : 0;

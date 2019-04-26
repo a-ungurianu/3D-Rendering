@@ -7,18 +7,25 @@ import cs4102.faces.data.FaceRepository;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 public class App {
 
+    public static Properties config = new Properties();
+
     public static void main(String[] args) throws IOException {
 
-        int noFaces = 100;
+
+        config.load(new FileInputStream("app.properties"));
+
+        int noFaces = Integer.parseInt(config.getProperty("faceCount","10"));
 
         FaceRepository repository = new FaceRepository(Paths.get("data/"), noFaces);
 
-        JFrame frame = new JFrame("Testing");
+        JFrame frame = new JFrame("Face compositor");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new BorderLayout());
         Canvas canvas = new Canvas(repository);

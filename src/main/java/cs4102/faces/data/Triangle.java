@@ -39,7 +39,7 @@ public class Triangle {
         Vector a = v2.getPosition().subtract(v1.getPosition());
         Vector b = v3.getPosition().subtract(v1.getPosition());
 
-        Vector norm = Utils.crossProduct(a,b);
+        Vector norm = Utils.crossProduct(b,a);
 
         return norm.divide(Utils.magnitude3D(norm));
 

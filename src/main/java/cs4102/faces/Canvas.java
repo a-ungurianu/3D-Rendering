@@ -1,15 +1,15 @@
 package cs4102.faces;
 
 import cs4102.faces.data.FaceRepository;
-import cs4102.faces.data.Model;
 import org.la4j.Vector;
 import org.la4j.vector.dense.BasicVector;
 
-import javax.jws.WebParam;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.Math.sqrt;
 
-public class Canvas extends JPanel implements MouseWheelListener {
+public class Canvas extends JPanel {
 
     private final FaceRepository repository;
     private final FaceCompositor composer;
@@ -36,7 +36,6 @@ public class Canvas extends JPanel implements MouseWheelListener {
         this.requestFocus();
         this.repository = repository;
         this.composer = new FaceCompositor(repository);
-        this.addMouseWheelListener(this);
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -104,7 +103,6 @@ public class Canvas extends JPanel implements MouseWheelListener {
 
 
 
-    private float translate = 0;
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -119,11 +117,18 @@ public class Canvas extends JPanel implements MouseWheelListener {
         renderer.scale(1,-1);
 
         renderer.pushMatrix();
+        renderer.rotateX(Double.parseDouble(App.config.getProperty("rotateX","0")));
+        renderer.rotateY(Double.parseDouble(App.config.getProperty("rotateY","0")));
+        renderer.rotateZ(Double.parseDouble(App.config.getProperty("rotateZ","0")));
         renderer.translate(250, 0);
+        renderer.translate(Double.parseDouble(App.config.getProperty("translateX","0")),
+                           Double.parseDouble(App.config.getProperty("translateY", "0")),
+                           Double.parseDouble(App.config.getProperty("translateZ","0")));
 
         renderer.scale(BasicVector.fromArray(new double[]{scale, scale, scale}));
-
-        renderer.translate(0,0, translate / scale);
+        renderer.scale(Double.parseDouble(App.config.getProperty("scaleX","1")),
+                       Double.parseDouble(App.config.getProperty("scaleY", "1")),
+                       Double.parseDouble(App.config.getProperty("scaleZ","1")));
 
         renderer.drawModel(composer.generateFace());
 
@@ -169,18 +174,7 @@ public class Canvas extends JPanel implements MouseWheelListener {
 
         System.out.printf("Time to render: %f ms\n", (System.nanoTime() - start) / 1000000f);
 
+
     }
 
-    @Override
-    public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-
-        if(mouseWheelEvent.getUnitsToScroll() > 0) {
-            scale *= 1.1;
-        }
-        else {
-            scale /= 1.1;
-        }
-
-        this.repaint();
-    }
 }
